@@ -12,7 +12,7 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   late final AppLinks _appLinks;
   StreamSubscription<Uri>? _sub;
-  String _status = 'Waiting for link...';
+  String _status = 'Waiting for link....';
 
   @override
   void initState() {
