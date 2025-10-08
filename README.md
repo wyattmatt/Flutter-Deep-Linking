@@ -31,3 +31,7 @@ The first things to check are:
 - The link handling code — make sure `_handleIncomingLink` parses the URI correctly and calls `Navigator.push`.
 
 If either part is off, the app may open but won’t navigate to the detail page.
+
+## Wrap-Up Summary
+
+Deep linking connects Flutter navigation and Android intent filters by registering custom URL schemes. When the system receives a matching intent, Flutter uses `uni_links` to parse the URI and route users to the correct screen. It’s practical for features like authentication redirects. The main challenge was correct manifest configuration, solved by precisely matching scheme and host.
