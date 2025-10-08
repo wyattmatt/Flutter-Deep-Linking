@@ -4,6 +4,8 @@ import 'dart:async';
 
 void main() => runApp(MyApp());
 
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+
 class MyApp extends StatefulWidget {
   @override
   State<MyApp> createState() => _MyAppState();
@@ -45,16 +47,28 @@ class _MyAppState extends State<MyApp> {
   }
 
   void _handleIncomingLink(Uri uri) {
-    // Misal link: myapp://details?id=123
-    if (uri.pathSegments.isNotEmpty && uri.pathSegments.first == 'details') {
-      final id = uri.queryParameters['id'] ?? 'unknown';
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (_) => DetailScreen(id: id)),
+    // Update details
+    if (uri.host == 'details') {
+      final itemId = uri.pathSegments.isNotEmpty ? uri.pathSegments.first : 'unknown';
+      navigatorKey.currentState?.push(
+        MaterialPageRoute(builder: (_) => DetailScreen(id: itemId)),
       );
-    } else {
-      setState(() => _status = 'Opened link: $uri');
+      return;
     }
+
+    // Update profile
+    if (uri.host == 'profile') {
+      final username = uri.pathSegments.isNotEmpty
+          ? uri.pathSegments.first
+          : uri.queryParameters['username'] ?? 'Guest';
+      navigatorKey.currentState?.push(
+        MaterialPageRoute(builder: (_) => ProfileScreen(username: username)),
+      );
+      return;
+    }
+
+    // Unknown link
+    setState(() => _status = 'Received unknown link: $uri');
   }
 
   @override
@@ -67,6 +81,7 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Deep Link Demo',
+      navigatorKey: navigatorKey,
       home: Scaffold(
         appBar: AppBar(title: const Text('Home')),
         body: Center(child: Text(_status)),
@@ -84,6 +99,19 @@ class DetailScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: const Text('Details')),
       body: Center(child: Text('You opened item ID: $id')),
+    );
+  }
+}
+
+class ProfileScreen extends StatelessWidget {
+  final String username;
+  const ProfileScreen({required this.username, super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Profile')),
+      body: Center(child: Text('Hello, $username!')),
     );
   }
 }
